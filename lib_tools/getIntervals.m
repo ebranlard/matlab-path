@@ -1,8 +1,9 @@
 function [ Its ] = getIntervals( IB )
-% Author: Manu
+% Author: E. Branlard
 
-% Returns an array describing the intervals within the input vector
-% [ intervallength  istart  iend ;
+% Input argument: IB a logical vector, where 1 means, I'm in an interval.
+% The function returns a matrix describing the intervals. Each line describe one interval and has three columns with values: 
+%     interval_length  istart  iend ;
 %
 % Its = getIntervals( IB )
 % IB is a logical vector of 0s and 1s
@@ -17,6 +18,7 @@ function [ Its ] = getIntervals( IB )
 % getIntervals([0 1 1])==[2 2 3]
 % getIntervals([1 1 0])==[2 1 2]
 % getIntervals([1 0 1])==[1 1 1; 1 3 3]
+% getIntervals([1 1 0 1 1 1])==[2 1 2; 3 4 6]
 % 
 %
 if(sum(IB)==0)
