@@ -10,6 +10,7 @@ function [ln,allgood,wrds]=fReadTillKeyword(fid,kwd)
       wrds=textscan(ln,'%s','ReturnOnError',true);
       if ~isempty(wrds{1})
         if isequal(lower(wrds{1}{1}),lower(kwd))
+            wrds=wrds{1};
           break
         end
       end

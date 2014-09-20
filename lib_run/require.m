@@ -16,6 +16,7 @@ end
 
 
 %% Arguments checks
+bSilent=0;
 if(nargin>1)
     Version=varargin{1};
     if(nargin==3)
@@ -31,14 +32,27 @@ if(~isfield(PATH,'STRING'))
     PATH.STRING='';
 end
 if(~isfield(PATH,libname))
-    warning(sprintf('%s is not in variable PATH',libname)); % TODO , accept stuff that are not in PATH
+    % --------------------------------------------------------------------------------
+    % --- The user requested a given folder
+    % --------------------------------------------------------------------------------
     folder=libname;
-    if ~isfield(PATH,'STRING_TMP')
-        PATH.STRING_TMP='';
+    % Let's check if the folder exists
+    if ~exist(folder,'dir')
+        warning(sprintf('require: path does not exists: %s\n',folder));
+    else
+        if(~bSilent)
+            fprintf('require:\t addding path %s\n',folder);
+        end
+        if ~isfield(PATH,'STRING_TMP')
+            PATH.STRING_TMP='';
+        end
+        PATH.STRING_TMP=[PATH.STRING_TMP ':' folder];
+        addpath(folder);
     end
-    PATH.STRING_TMP=[PATH.STRING_TMP ':' folder];
-    addpath(folder);
 else
+    % --------------------------------------------------------------------------------
+    % ---  
+    % --------------------------------------------------------------------------------
     folder=getfield(PATH,libname);
 
     vers=dir([folder 'v*']);

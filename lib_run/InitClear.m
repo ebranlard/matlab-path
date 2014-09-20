@@ -2,7 +2,7 @@
 clc;
 clearPath;
 clear all;close all
-
+warning on;
 
 %% Getting Script info
 global SCRIPT;
@@ -35,7 +35,7 @@ setMatFigure(1);
 % setFigurePath({'D:/Work/reports/figs/','D:/Work/reports/figsdump/'})
 % setMatFigurePath({'D:/Work/reports/matfig/','./matfig/'})
 setFigureFont('default');
-setFigurePath({'/work/publications/phdthesis/figsdump/'})
+setFigurePath({'/work/publications/phdthesis/figsdump/','./figs/'})
 setMatFigurePath({'/work/publications/phdthesis/matfig/', './matfig/'})
 
 set(0,'DefaultLineLineWidth',1.3)

@@ -1,4 +1,6 @@
-function [bname,dname]=basename(fullpath);
+function [bname,dname]=basename(fullpath)
+%  manu: matlab fileparts function is better
+%
 % Glenn Thompson March 2003
 % This function is designed to mimic the Basename module in Perl
 % [bname,dname]=basename(fullpath);

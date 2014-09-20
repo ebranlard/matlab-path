@@ -38,6 +38,10 @@ global FigureFont
 if(isempty(FigureFont))
     FigureFont='default';
 end
+global FigureFontMin
+if(isempty(FigureFontMin))
+    FigureFontMin='11';
+end
 % Figure RePosition: %should we resize the figure to the standard size : 560 420 or use the size from the user. By Default I reposition now
 global bFigureRePosition
 if(isempty(bFigureRePosition))
@@ -127,12 +131,12 @@ MyStyle.ShowUI= 'off';   %show UI controls while exporting
 % FONT PARAMETERS , defaul is scaled and min 11 
 if isequal(FigureFont,'default') 
     MyStyle.FontMode= 'scaled'; %used to be fixed | scaled | none |auto
-    MyStyle.FontSizeMin= '11'; %used to be 11
+    MyStyle.FontSizeMin= FigureFontMin; %'11'; %used to be 11
     MyStyle.ScaledFontSize= 'auto';
-    MyStyle.FixedFontSize= '11'; % works only if font mode is fixed
+    MyStyle.FixedFontSize= FigureFontMin;%'11'; % works only if font mode is fixed
 else
     MyStyle.FontMode= 'fixed'; %used to be fixed | scaled | none |auto
-    MyStyle.FontSizeMin= '11'; %used to be 11
+    MyStyle.FontSizeMin= FigureFontMin;; %used to be 11
     MyStyle.ScaledFontSize= 'auto';
     MyStyle.FixedFontSize= FigureFont; % only if font mode is fixed
 end
@@ -160,6 +164,22 @@ if(bMatFigure)
     for ifp=1:length(MatFigurePath)
         if(~isdir(MatFigurePath{ifp}))
             mkdir(MatFigurePath{ifp});
+        end
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creating fig path if dir do not exist, based on user requestc
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+for ifp=1:length(FigurePath)
+    % Creating directory if it doesn't exist
+    if ~exist(FigurePath{ifp},'dir')
+        prompt = sprintf('Directory %s does not exist.\n Do you want to create it? Y/N [Y]: ',FigurePath{ifp});
+        str = input(prompt,'s');
+        if isempty(str)
+            str = 'Y';
+        end
+        if isequal(str,'Y')
+            mkdir(FigurePath{ifp});
         end
     end
 end
@@ -218,10 +238,19 @@ for i=1:length(figs)
     %axh=get(hfig,'CurrentAxes');
     %set(axh,'GridLineStyle','-.')%,'LineWidth',0.9)
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % If multiple figures, get all the axis
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % axNoLegendsOrColorbars= axList(~ismember(get(axList,'Tag'),{'legend','Colobar'}))
+    % ax=gca()
+    axList = findall(hfig,'type','axes');
 
 
     if(bFigureLatex)                
-        format_ticks(gca,0.02,0.009,'FontSize',11); % font size useless, hgexport takes care of it
+        for iax =1:length(axList)
+            ax=axList(iax);
+            format_ticks(ax,0.02,0.009,'FontSize',11); % font size useless, hgexport takes care of it
+        end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Repositionning if needed 
@@ -251,12 +280,21 @@ for i=1:length(figs)
     
     %     box on
     if(bFigureLatex)
-        set(get(gca,'XLabel'),'Interpreter','Latex','FontSize',13);
-        set(get(gca,'YLabel'),'Interpreter','Latex','FontSize',13);
+        %% ------------- NEWLY COMMENTED (FONT)
+        % I'n not sure I want that:
+        for iax =1:length(axList)
+            ax=axList(iax);
+            set(get(ax,'XLabel'),'Interpreter','Latex','FontSize',13);
+            set(get(ax,'YLabel'),'Interpreter','Latex','FontSize',13);
+        end
+        %% ------------- END NEWLY COMMENTED (FONT)
         
         hlegend = findall(gcf,'tag','legend');
         legloc=get(hlegend,'Location');
         set(hlegend,'Interpreter','Latex','FontSize',11);
+
+
+
 %         set(hlegend,'Location',legloc)    ;
 %         pause(0.1);  % matlab needs to rest a little
 %         legpos=get(hlegend,'OuterPosition');
@@ -278,6 +316,7 @@ for i=1:length(figs)
     % Exporting in Figure Path
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for ifp=1:length(FigurePath)
+
         filename=sprintf('%s%s.%s',FigurePath{ifp},figName,MyStyle.Format);
 %         fprintf('Path %s\n',FigurePath{ifp});
         if(isequal(format,'pdf'))           
@@ -373,6 +412,7 @@ for i=1:length(figs)
     end
     
 end
+fprintf('Figure saved in %s',FigurePath{1});
 disp(' ');
 %~ disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
 %~ disp(' ');

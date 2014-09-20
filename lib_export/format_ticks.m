@@ -29,7 +29,7 @@ hlabelx = get(h,'XLabel');
 labelxpos=get(hlabelx,'pos');
 hlabely = get(h,'YLabel');
 labelypos=get(hlabely,'pos');
-axispos = get(gca,'Position');
+axispos = get(h,'Position');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BEGIN: FIRST THE X-AXIS TICK LABELS
@@ -70,8 +70,8 @@ end;
 hx = text(tickposx,...
     repmat(lim(1)-offsetx*(lim(2)-lim(1)),length(tickposx),1),...
     tickx,'HorizontalAlignment','center',...
-    'VerticalAlignment','top','interpreter','LaTex');
-
+    'VerticalAlignment','top','interpreter','LaTex','Parent',h); % MANU added parent
+% 
 %Get and set the text size and weight
 set(hx,'FontSize',get(h,'FontSize'));
 set(hx,'FontWeight',get(h,'FontWeight'));
@@ -87,7 +87,7 @@ ticky = get(h,'YTickLabel');
 temp = ticky;
 ticky = cell(1,size(temp,1));
 for j=1:size(temp,1);
-    ticky{j} =  ['$' strtrim( temp(j,:)) '$'];
+    ticky{j} = strcat( ['$' strtrim( temp(j,:)) '$']); % MANU added strcat
 end;
 
 
@@ -98,13 +98,22 @@ set(h,'YTickLabel',{});
 %set the new tick positions
 set(h,'YTick',tickposy);
 
-set(gca,'Position',axispos)
+set(h,'Position',axispos);
 
 
 
 %Convert the cell labels to a character string
 %ticky = char(ticky);
-ticky = cellstr(ticky);
+try
+    ticky = cellstr(ticky);
+catch
+    % MANU Sometimes there are cells in-bricated into cells, we need to flatten that
+    temp2=ticky
+    for j=1:length(temp2);
+        ticky{j} = strcat(temp2{j}{:});
+    end;
+
+end
 %Make the YTICKS!
 lim = get(h,'XLim');
 if min(tickposx) < lim(1);
@@ -118,7 +127,7 @@ hy = text(...
     repmat(lim(1)-offsety*(lim(2)-lim(1)),length(tickposy),1),...
     tickposy,...
     ticky,'VerticalAlignment','middle',...
-    'HorizontalAlignment','right','interpreter','LaTex');
+    'HorizontalAlignment','right','interpreter','LaTex','Parent',h); % MANU added parent
 
 
 %%

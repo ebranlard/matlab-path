@@ -63,7 +63,7 @@ elseif nargin==1
         colrs=mcolrs(mod(v-1,size(mcolrs,1))+1,:);
 elseif nargin==2
     m=varargin{1};
-    colrs=[0.5 0.5 0.5]*(v-1)/(m-1); %grayscale
+    colrs=[0.55 0.55 0.55]*(v-1)/(m-1); %grayscale
 elseif nargin==3 
   % then the third argument determined wheter it's BW or color
   m=varargin{1};
@@ -72,7 +72,7 @@ elseif nargin==3
     if(m==1)
       colrs=[0 0 0];
     else
-      colrs=[0.5 0.5 0.5]*(v-1)/(m-1); %grayscale
+      colrs=[0.55 0.55 0.55]*(v-1)/(m-1); %grayscale
     end
   else
     colrs=mcolrs(mod(v-1,size(mcolrs,1))+1,:);

@@ -7,15 +7,17 @@ if ispc
     PATH.FLIB    = 'F:/fortran/_lib/windows-ia32/';
     PATH.PHDTHESIS='F:/Exchange/';
 else
-    PATH.BEM='/work/bin/BEMCodes/BEM/';
-    PATH.VL='/work/bin/VortexCodes/VortexLattice/';
-    PATH.VC2D='/work/bin/VortexCodes/VortexCode2D/';
-    PATH.VC2DKATZ='/work/bin/VortexCodes/VortexCode2D_Katz/';
+    PATH.BEM        = '/work/bin/BEMCodes/BEM/'                        ; 
+    PATH.VL         = '/work/bin/VortexCodes/VortexLattice/'           ; 
+    PATH.VL_PRESC   = '/work/bin/VortexCodes/VortexLattice_Prescribed/';
+    PATH.VCYL       = '/work/bin/VortexCodes/VortexCylinders/'           ; 
+    PATH.VC2D       = '/work/bin/VortexCodes/VortexCode2D/'            ; 
+    PATH.VC2DKATZ   = '/work/bin/VortexCodes/VortexCode2D_Katz/'       ; 
 
-    PATH.VC_LIB_C   ='/work/lib/VC_lib/C/';
-    PATH.VC_LIB_MAT ='/work/lib/VC_lib/matlab/';
+    PATH.VC_LIB_C   = '/work/lib/VC_lib/C/'                            ; 
+    PATH.VC_LIB_MAT = '/work/lib/VC_lib/matlab/'                       ; 
 
-    PATH.FLIB    = '/work/lib/OmniVor_lib/fortran/_lib/linux-ia32/';
+    PATH.FLIB       = '/work/lib/OmniVor_lib/fortran/_lib/linux-ia32/' ; 
 
 
     PATH.BEAR       ='/work/lib/OmniVor_lib/matlab/Layer4_Bear/';
@@ -40,12 +42,16 @@ else
     PATH.PROFILES   ='/work/lib/FluidMechanics/Profiles/';
     PATH.POTFLOW    ='/work/lib/FluidMechanics/PotentialFlow/';
 
+
+    %% Data
     PATH.TMP='/work/tmp/';
     PATH.DATA_MOVIE='/work/movies/';
 
     PATH.DATA_IN    ='/work/data/';
     PATH.DATA_OUT   ='/work/data/';
     PATH.DATA_WT    ='/work/data/WT/';
+    
+    PATH.TIPLOSSDB  ='/work/data/BEM/TipLossDB/';
 
 
     PATH.PHDTHESIS='/work/publications/phdthesis/';

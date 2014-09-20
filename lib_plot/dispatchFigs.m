@@ -3,7 +3,9 @@ function []=dispatchFigs(varargin)
 % E. Branlard June 2013
 %
 % dispatchFigs : no arguments: try his best to put the figure on the screen without resizing figures
-% dispatchFigs(1) : use a defaults grid on the 2 or 1 screen
+% dispatchFigs(0) : same as dispatchFigs without arguments
+% dispatchFigs(1) : use a defaults grid on the available screen(s)
+% dispatchFigs(2) : use a default grid on the laptop display (screen 2)
 % dispatchFigs(3,4) : use grid 3x4 on screen 1 
 % dispatchFigs(3,4,2) : use grid 3x4 on screen 2 
 % dispatchFigs(3,4,2,2) : use grid 3x4 on screen 1 and 2x2 on screen two
@@ -49,10 +51,20 @@ if(nargin==0 || (nargin==1 && varargin{1}==0))
      end
  elseif(nargin==1)
    % Default Grid
-    Grid{1}=[4 3];
-    if(length(S)==1)
-    else
-        Grid{2}=[3 2];
+   switch (varargin{1}) 
+       case 1
+       % Default Grid on both screens
+        Grid{1}=[4 3];
+        if(length(S)==1)
+        else
+            Grid{2}=[3 2];
+        end
+    case 2
+       % Default Grid only on the last screen
+        Grid{1}=[3 2];
+        S{1}=S{end}; % using only the last screen
+    otherwise
+        error('Argument should be 1 or 2')
     end
     setFigGrid(S,Grid,hWin)
 elseif(nargin==2)
