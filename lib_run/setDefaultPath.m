@@ -14,8 +14,9 @@ else
     PATH.VC2D       = '/work/bin/VortexCodes/VortexCode2D/'            ; 
     PATH.VC2DKATZ   = '/work/bin/VortexCodes/VortexCode2D_Katz/'       ; 
 
-    PATH.VC_LIB_C   = '/work/lib/VC_lib/C/'                            ; 
-    PATH.VC_LIB_MAT = '/work/lib/VC_lib/matlab/'                       ; 
+    PATH.VC_LIB     = '/work/lib/VC_lib/'                            ; 
+    PATH.VC_LIB_C   = '/work/lib/VC_lib/_Legacy/C/'                  ; 
+    PATH.VC_LIB_MAT = '/work/lib/VC_lib/_Legacy/matlab/'             ; 
 
     PATH.FLIB       = '/work/lib/OmniVor_lib/fortran/_lib/linux-ia32/' ; 
 
@@ -25,9 +26,12 @@ else
     PATH.RACCOON    ='/work/lib/OmniVor_lib/matlab/Layer2_Raccoon/';
     PATH.MOUFFETTE  ='/work/lib/OmniVor_lib/matlab/Layer1_Mouffette/';
     PATH.CHIPMUNK   ='/work/lib/OmniVor_lib/matlab/Layer0_Chipmunk/';
-    PATH.Wind       ='/work/lib/OmniVor_lib/matlab/Wind/';
+    PATH.Wind       ='/work/lib/Wind/'; % Used to be '/work/lib/OmniVor_lib/matlab/Wind/';
+    PATH.Time       ='/work/lib/Time/';
+    PATH.Mesh       ='/work/lib/Mesh/';
     PATH.Environment='/work/lib/OmniVor_lib/matlab/Environment/';
     PATH.OMNIVORLINK='/work/lib/OmniVor_lib/matlab/Link/';
+    PATH.SpecAn     ='/work/lib/SpectralAnalysis/';
 
 
     PATH.WTlib='/work/lib/WTlib/';

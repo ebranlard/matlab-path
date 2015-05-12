@@ -46,7 +46,7 @@ for i=1:n_chunk
     %     command=sprintf('EllipticPiMathematica.sh %s',numbers);
     % Actually doing the call
     %     try
-    [a,res]=system(command);
+    [~,res]=system(command);
 
     % Scanning terminal output
     try

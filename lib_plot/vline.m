@@ -5,6 +5,12 @@ function vline(vx,varargin)
 %
 % E. Branlard - February 2014
 %
+bLegend=true;
 for x=vx
-    line([x x],get(gca(),'YLim'),varargin{:})
+    if bLegend
+        line([x x],get(gca(),'YLim'),varargin{:})
+        bLegend=false;
+    else
+        line([x x],get(gca(),'YLim'),varargin{:},'handlevisibility','off')
+    end
 end

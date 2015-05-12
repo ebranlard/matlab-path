@@ -34,7 +34,10 @@ setFigureTitle(0);
 setMatFigure(1);
 % setFigurePath({'D:/Work/reports/figs/','D:/Work/reports/figsdump/'})
 % setMatFigurePath({'D:/Work/reports/matfig/','./matfig/'})
-setFigureFont('default');
+% setFigureFont('default');
+setFigureWidth('14');
+setFigureHeight('10.5');
+setFigureFont('13');
 setFigurePath({'/work/publications/phdthesis/figsdump/','./figs/'})
 setMatFigurePath({'/work/publications/phdthesis/matfig/', './matfig/'})
 

@@ -83,7 +83,8 @@ if(isempty(FigureWidth) || isequal(FigureWidth,'0') )
     end
 end
 if(isempty(FigureHeight) || isequal(FigureHeight,'0'))
-    FigureHeight='auto';
+    FigureHeight='10.5';
+%     FigureHeight='auto';
 end
 
 

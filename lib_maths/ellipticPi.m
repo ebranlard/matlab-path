@@ -9,12 +9,12 @@ function Pi = ellipticPi(varargin)
 if(nargin==2)
     n=varargin{1};
     m=varargin{2};
-%     phi=pi/2;
-% elseif(nargin==3)
-%     error('input 2 arguments')
-%     n   = varargin{1} ; 
-%     phi = varargin{2} ; 
-%     m   = varargin{3} ; 
+    %     phi=pi/2;
+    % elseif(nargin==3)
+    %     error('input 2 arguments')
+    %     n   = varargin{1} ; 
+    %     phi = varargin{2} ; 
+    %     m   = varargin{3} ; 
 else
     error('Input 2 arguments')
 end
@@ -33,7 +33,7 @@ numbers=sprintf('%f ',nFlat,mFlat);
 % creating a system call where numbers are in argument
 command=sprintf('EllipticPiMathematica.m %s',numbers);
 % Actually doing the call
-[a,res]=system(command);
+[~,res]=system(command);
 % Scanning terminal output
 PiFlat=sscanf(res,'%f')';
 
