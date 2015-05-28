@@ -15,14 +15,17 @@ function errorDocCallback(topic, fileName, lineNumber)
             bTweak=true; 
         end
     end
+    editor = system_dependent('getpref', 'EditorOtherEditor');
+    editor = editor(2:end);
+    if isempty(editor)
+        bTweak=false;
+    end
 
     if bTweak
         % --------------------------------------------------------------------------------
         % --- TWEAKED DOC CALLBACK to call editor
         % --------------------------------------------------------------------------------
 
-        editor = system_dependent('getpref', 'EditorOtherEditor');
-        editor = editor(2:end);
         file=fileName;
         if nargin==3
             linecol = sprintf('+%d',lineNumber); % tehre is something about -c "normal column|" but it didn't work
