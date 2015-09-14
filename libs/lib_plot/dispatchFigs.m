@@ -47,10 +47,21 @@ yMenuBarBottom = 0  ;
 % --------------------------------------------------------------------------------
 A  = get(0, 'ScreenSize' )    ; % should disappear
 mp = get(0, 'MonitorPositions');
-nMonitors= size(mp,1);
+
+% --------------------------------------------------------------------------------
+% --- Specific Overrides (due to some nVidia config on linux)
+% --------------------------------------------------------------------------------
+if(A(3)==3520 && A(4)==1080)
+    % Specific case for work: Laptop right of main screen
+    Laptop=[1600 900];
+    mp=zeros(2,4);
+    mp(1,:)=[1,1,A(3)-Laptop(1),A(4)];
+    mp(2,:)=[A(3)-Laptop(1),1,Laptop(1),Laptop(2)];
+end
 % --------------------------------------------------------------------------------
 % --- Creating screens "effective" extents  (without menu bars)
 % --------------------------------------------------------------------------------
+nMonitors= size(mp,1);
 % S{i} = [xmin, yTopCorner, xmax, ymax]
 if(nMonitors==1)
     % Parameter for the current monitor
@@ -73,16 +84,6 @@ elseif(nMonitors==2)
 else
     error('Script writtent in a naive way, generalization for n monitors todo')
 end
-
-%% LEGACY
-% Laptop=[1600 900];
-% if(A(3)>Laptop(1))
-%     S{1}=[xMenuBar A(4)-yMenuBar A(3)-Laptop(1) A(4)-yMenuBar];
-%     S{2}=[A(3)-Laptop(1) A(4) A(3) Laptop(2)];
-% else
-%     S{1}=[xMenuBar Laptop(2)-yMenuBar Laptop(1) Laptop(2)];
-% end
-
 if(nargin==0 || (nargin==1 && varargin{1}==0))
     % --------------------------------------------------------------------------------
     % --- Dispatch without resizing figs)
@@ -91,7 +92,6 @@ if(nargin==0 || (nargin==1 && varargin{1}==0))
     ScreenRoom=S{1};
     figs=get(0,'children');
     for i=1:length(figs)
-        hfig=figs(length(figs)-i+1);  % fig handle
         hfig=figs(length(figs)-i+1);  % fig handle
         P=get(hfig,'Position');
         P(1)=ScreenRoom(1);
