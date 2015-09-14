@@ -54,7 +54,6 @@ function fWriteVTKPolydataPoints(filename,bBinary,P,varargin )
         for iv=1:floor(length(varargin)/2)
             varname = varargin{2*iv-1};
             M       = varargin{2*iv}  ;
-            disp(varname)
 
             % --- Detecting scalar/vector and transposing if necessary
             if length(size(M))==1
