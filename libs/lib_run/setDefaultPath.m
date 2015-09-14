@@ -1,64 +1,63 @@
 function setDefaultPath
-clearPath; %just in case
+    clearPath                                                                   ; % just in case
 
-global PATH
-if ispc
-    % Windows
-    PATH.FLIB    = 'F:/fortran/_lib/windows-ia32/';
-    PATH.PHDTHESIS='F:/Exchange/';
-else
-    PATH.BEM        = '/work/bin/BEMCodes/BEM/'                        ; 
-    PATH.VL         = '/work/bin/VortexCodes/VortexLattice/'           ; 
-    PATH.VL_PRESC   = '/work/bin/VortexCodes/VortexLattice_Prescribed/';
-    PATH.VCYL       = '/work/bin/VortexCodes/VortexCylinders/'           ; 
-    PATH.VC2D       = '/work/bin/VortexCodes/VortexCode2D/'            ; 
-    PATH.VC2DKATZ   = '/work/bin/VortexCodes/VortexCode2D_Katz/'       ; 
-
-    PATH.VC_LIB     = '/work/lib/VC_lib/'                            ; 
-    PATH.VC_LIB_C   = '/work/lib/VC_lib/_Legacy/C/'                  ; 
-    PATH.VC_LIB_MAT = '/work/lib/VC_lib/_Legacy/matlab/'             ; 
-
-    PATH.FLIB       = '/work/lib/OmniVor_lib/fortran/_lib/linux-ia32/' ; 
-
-
-    PATH.BEAR       ='/work/lib/OmniVor_lib/matlab/Layer4_Bear/';
-    PATH.COYOTE     ='/work/lib/OmniVor_lib/matlab/Layer3_Coyote/';
-    PATH.RACCOON    ='/work/lib/OmniVor_lib/matlab/Layer2_Raccoon/';
-    PATH.MOUFFETTE  ='/work/lib/OmniVor_lib/matlab/Layer1_Mouffette/';
-    PATH.CHIPMUNK   ='/work/lib/OmniVor_lib/matlab/Layer0_Chipmunk/';
-    PATH.Wind       ='/work/lib/Wind/'; % Used to be '/work/lib/OmniVor_lib/matlab/Wind/';
-    PATH.Time       ='/work/lib/Time/';
-    PATH.Mesh       ='/work/lib/Mesh/';
-    PATH.Environment='/work/lib/OmniVor_lib/matlab/Environment/';
-    PATH.OMNIVORLINK='/work/lib/OmniVor_lib/matlab/Link/';
-    PATH.SpecAn     ='/work/lib/SpectralAnalysis/';
-
-
-    PATH.WTlib='/work/lib/WTlib/';
+    global PATH
+    if ispc
+        % Windows
+        PATH.FLIB                = 'F:/fortran/_lib/windows-ia32/'                  ;
+        PATH.PHDTHESIS           = 'F:/Exchange/'                                   ;
+    else
+        % Vortex Codes
+        PATH.VL                  = '/work/libs/VortexCodes/VortexLattice/'           ;
+        PATH.VL_PRESC            = '/work/libs/VortexCodes/VortexLattice_Prescribed/';
+        PATH.VCYL                = '/work/libs/VortexCodes/VortexCylinders/'         ;
+        PATH.VC2D                = '/work/libs/VortexCodes/VortexCode2D/'            ;
+        PATH.VC2DKATZ            = '/work/libs/VortexCodes/VortexCode2D_Katz/'       ;
+        PATH.VC_LIB              = '/work/libs/VortexCodes/VC_lib/'                              ;
+        PATH.VC_LIB_C            = '/work/libs/VortexCodes/VC_lib/_Legacy/C/'                    ;
+        PATH.VC_LIB_MAT          = '/work/libs/VortexCodes/VC_lib/_Legacy/matlab/'               ;
 
 
 
-    PATH.THEODORSEN ='/work/lib/WTTheory/Theodorsen/';
-    PATH.OPTIMCIRC  ='/work/lib/WTTheory/OptimalCirculation/';
-    PATH.EXPANSION  ='/work/lib/WTTheory/WakeExpansion/';
-
-    %% Fluid MEch
-    PATH.PROFILES   ='/work/lib/FluidMechanics/Profiles/';
-    PATH.POTFLOW    ='/work/lib/FluidMechanics/PotentialFlow/';
-
-
-    %% Data
-    PATH.TMP='/work/tmp/';
-    PATH.DATA_MOVIE='/work/movies/';
-
-    PATH.DATA_IN    ='/work/data/';
-    PATH.DATA_OUT   ='/work/data/';
-    PATH.DATA_WT    ='/work/data/WT/';
-    
-    PATH.TIPLOSSDB  ='/work/data/BEM/TipLossDB/';
+        % Omnivor
+        PATH.FLIB                = '/work/libs/OmniVor/_src/_lib/linux-ia32/' ;
+        PATH.BEAR                = '/work/libs/OmniVor/matlab/Layer4_Bear/'      ;
+        PATH.COYOTE              = '/work/libs/OmniVor/matlab/Layer3_Coyote/'    ;
+        PATH.RACCOON             = '/work/libs/OmniVor/matlab/Layer2_Raccoon/'   ;
+        PATH.MOUFFETTE           = '/work/libs/OmniVor/matlab/Layer1_Mouffette/' ;
+        PATH.CHIPMUNK            = '/work/libs/OmniVor/matlab/Layer0_Chipmunk/'  ;
+        PATH.Environment         = '/work/libs/OmniVor/matlab/Environment/'      ;
+        PATH.OMNIVORLINK         = '/work/libs/OmniVor/matlab/Link/'             ;
+        PATH.Time                = '/work/libs/General/Time/'                                ;
+        PATH.Mesh                = '/work/libs/General/Mesh/'                                ;
+        PATH.SpecAn              = '/work/libs/General/SpectralAnalysis/'                    ;
 
 
-    PATH.PHDTHESIS='/work/publications/phdthesis/';
+        % ---   Wind Energy
+        PATH.BEM                 = '/work/bins/WindEnergy/BEMCodes/BEM/'                        ;
+        PATH.WTlib               = '/work/libs/WindEnergy/WTlib/'                               ;
+        PATH.THEODORSEN          = '/work/libs/WindEnergy/WTTheory/Theodorsen/'                ;
+        PATH.OPTIMCIRC           = '/work/libs/WindEnergy/WTTheory/OptimalCirculation/'        ;
+        PATH.EXPANSION           = '/work/libs/WindEnergy/WTTheory/WakeExpansion/'             ;
+        PATH.Wind                = '/work/libs/WindEnergy/Wind/'                                ; % Used to be '/work/lib/OmniVor_lib/matlab/Wind/';
+
+        % --- Fluid MEch
+        PATH.PROFILES            = '/work/libs/FluidMechanics/Profiles/'            ;
+        PATH.POTFLOW             = '/work/libs/FluidMechanics/PotentialFlow/'       ;
+
+        % Data
+        PATH.TMP                 = '/work/tmp/'                                     ;
+        PATH.DATA_MOVIE          = '/work/movies/'                                  ;
+
+        PATH.DATA_IN             = '/work/data/'                                    ;
+        PATH.DATA_OUT            = '/work/data/'                                    ;
+        PATH.DATA_WT             = '/work/data/WT/'                                 ;
+
+        PATH.TIPLOSSDB           = '/work/data/BEM/TipLossDB/'                      ;
 
 
-end
+        % OLD
+        %PATH.PHDTHESIS           = '/work/publications/phdthesis/'                  ;
+
+
+    end
