@@ -25,7 +25,7 @@ function setDefaultPath
         PATH.COYOTE              = '/work/libs/OmniVor/matlab/Layer3_Coyote/'    ;
         PATH.RACCOON             = '/work/libs/OmniVor/matlab/Layer2_Raccoon/'   ;
         PATH.MOUFFETTE           = '/work/libs/OmniVor/matlab/Layer1_Mouffette/' ;
-        PATH.CHIPMUNK            = '/work/libs/OmniVor/matlab/Layer0_Chipmunk/'  ;
+        PATH.CHIPMUNK            = '/work/libs/chipmunk/matlab/'  ;
         PATH.Environment         = '/work/libs/OmniVor/matlab/Environment/'      ;
         PATH.OMNIVORLINK         = '/work/libs/OmniVor/matlab/Link/'             ;
         PATH.Time                = '/work/libs/General/Time/'                                ;
@@ -34,7 +34,7 @@ function setDefaultPath
 
 
         % ---   Wind Energy
-        PATH.BEM                 = '/work/bins/WindEnergy/BEMCodes/BEM/'                        ;
+        PATH.BEM                 = '/work/libs/WindEnergy/BEM/'                        ;
         PATH.WTlib               = '/work/libs/WindEnergy/WTlib/'                               ;
         PATH.THEODORSEN          = '/work/libs/WindEnergy/WTTheory/Theodorsen/'                ;
         PATH.OPTIMCIRC           = '/work/libs/WindEnergy/WTTheory/OptimalCirculation/'        ;

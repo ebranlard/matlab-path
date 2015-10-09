@@ -60,7 +60,11 @@ elseif nargin==1
     % if(length(v)>1)
     %     mcolrs(mod(v-1,size(mcolrs,1))+1,:);
     % end
+    if(v==0) 
+        colrs=[0,0,0];
+    else
         colrs=mcolrs(mod(v-1,size(mcolrs,1))+1,:);
+    end
 elseif nargin==2
     m=varargin{1};
     colrs=[0.55 0.55 0.55]*(v-1)/(m-1); %grayscale

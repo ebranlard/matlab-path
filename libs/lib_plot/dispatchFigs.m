@@ -104,7 +104,7 @@ if(nargin==0 || (nargin==1 && varargin{1}==0))
             ScreenRoom(2)= ScreenRoom(2)-P(4)-hWin;
         end
          if(ScreenRoom(2)-P(4)-hWin<S{iScreen}(2)-S{iScreen}(4) )
-            iScreen=mod(iScreen,nScreens)+1;
+            iScreen=mod(iScreen,nMonitors)+1;
             ScreenRoom=S{iScreen} ;
          end
      end
