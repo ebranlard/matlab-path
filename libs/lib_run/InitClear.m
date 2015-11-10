@@ -51,7 +51,7 @@ set(0,'DefaultLineLineWidth',1.3)
 set(0,'DefaultAxesColorOrder',fColrs());
 % Default figure position
 A=get( 0, 'ScreenSize' );
-if(A(3)>1600)
+if(A(3)>1920)
     set(0, 'DefaultFigurePosition',[  2467 432   560   420]) % two screen
 else
   set(0, 'DefaultFigurePosition',[  692   354   560   420]) % One screen
