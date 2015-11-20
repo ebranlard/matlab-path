@@ -1,4 +1,4 @@
-function []=require(libname,varargin)
+function []=require(libname_or_folder,Version)
 % add a specific path to matlab path in a safe way.
 % Two versions of a same library cannot be imported twice.
 % The path is cleared by clearPath() which is usually called by InitClear
@@ -6,55 +6,92 @@ function []=require(libname,varargin)
 % For now, libname should be a field of the variable PATH.
 % see setDefaultPath to define such field
 
-global PATH
+global PATH;
 
 %% Safety checks for old libraries
-if(isequal(libname,'VC_LIB_MAT')) 
+if(isequal(libname_or_folder,'VC_LIB_MAT')) 
     warning('Library VC_LIB_MAT is depreciated, use Chipmunk instead')
 end
 
 
+%% Checks
+if ~exist('Version','var'); Version=''; end
+if ~isfield(PATH,'STRING'); PATH.STRING=''; end
 
-%% Arguments checks
-bSilent=0;
-if(nargin>1)
-    Version=varargin{1};
-    if(nargin==3)
-        bSilent=varargin{2}; 
-    else
-        bSilent=0;
-    end
-else
-    Version='';
-end
+%
 
-if(~isfield(PATH,'STRING'))
-    PATH.STRING='';
-end
-if(~isfield(PATH,libname))
+if  isdir(libname_or_folder) && isempty(Version)
     % --------------------------------------------------------------------------------
     % --- The user requested a given folder
     % --------------------------------------------------------------------------------
-    folder=libname;
-    % Let's check if the folder exists
-    if ~exist(folder,'dir')
-        warning(sprintf('require: path does not exists: %s\n',folder));
-    else
-        if(~bSilent)
-            fprintf('require:\t addding path %s\n',folder);
-        end
-        if ~isfield(PATH,'STRING_TMP')
-            PATH.STRING_TMP='';
-        end
-        PATH.STRING_TMP=[PATH.STRING_TMP ':' folder];
-        addpath(folder);
-    end
+    folder=libname_or_folder;
+    path_manager('add',folder);
 else
     % --------------------------------------------------------------------------------
-    % ---  
+    % --- Loading a library / version
     % --------------------------------------------------------------------------------
+    libname=libname_or_folder;
+
+
+    % --- Handling if the field/libname is not present in variable PATH
+    if ~isfield(PATH,libname) 
+        % Test whether we have ui available
+        if usejava('jvm') && ~feature('ShowFigureWindows')
+            bUI=false;
+        else
+            bUI=true;
+        end
+
+        % config_file (needs to be in harmony with setDefaultPath)
+        lib_require_folder = fileparts(mfilename('fullpath'))                 ;
+        config_file        = fullfile(lib_require_folder,'require_config.dat');
+
+        % Getting Library directory from user
+        msg=sprintf(['The location of the library %s was not defined on this machine.\n' ...
+                     'The directory for this library needs to be specified in the following file:\n' ...
+                     '    %s \n' ...
+                     'using the format:   \n' ...
+                     '    %s = ''directory/''   \n\n' ...
+                     'Do you want to specify the directory now? [y/n]' ...  
+                      ],libname,config_file,libname);
+        if bUI
+            button = questdlg(msg, 'Library not found','Yes (GUI)', 'No', 'Yes (no gui)','Yes (GUI)');
+            if strcmpi(button, 'No');
+                disp(msg);
+                disp('Aborting')
+                return; 
+            end
+            if strcmpi(button, 'Yes (GUI)');
+                folder = uigetdir;
+            else
+                folder = input('Enter directory here: ','s');
+            end
+        else
+            disp(msg);
+            m=input('','s');
+            m=lower(m(1));
+            disp(m)
+            if m(1)=='n' 
+                disp('Aborting')
+                return; 
+            end
+            folder = input('Enter directory here: ','s');
+        end
+        folder=fullfile([folder filesep]);
+        % Appending to config file 
+        fid = fopen(config_file, 'a+');
+        fprintf(fid, '%s = ''%s''\n', libname,folder);
+        fclose(fid);
+        % Adding field to PATH
+        eval(sprintf('PATH.%s=''%s'';',libname,folder));
+    end
+
+
+    % --- 
     folder=getfield(PATH,libname);
 
+
+    % ---  Getting proper version of library
     vers=dir([folder 'v*']);
     if isequal(Version,'latest')
         % we load the latest version
@@ -76,32 +113,24 @@ else
             % Just printing warning of reload
             [~, ~, ~, ~, ~, ~, g]=regexp(matchStr{1},'/');
             oldVersion=g{end};
-            if(~bSilent)
-                if(~isequal(oldVersion,Version))
-                    fprintf('require:\t %s was already loaded with version %s and is now replaced by version %s\n',libname,oldVersion,Version);
-                else
-                    fprintf('require:\t %s was already loaded with version %s\n',libname,oldVersion);
-                end
+            if(~isequal(oldVersion,Version))
+                fprintf('require:     %s was already loaded with version %s and is now replaced by version %s\n',libname,oldVersion,Version);
+                oldfolder=[folder oldVersion];
+                path_manager('rm',oldfolder);
+            else
+                fprintf('require:     %s was already loaded with version %s\n',libname,oldVersion);
             end
-            oldfolder=[folder oldVersion];
-            % removing the path string
-            [~, ~, ~, ~, ~, ~, g] = regexp(PATH.STRING, [oldfolder ':']);
-            PATH.STRING=strcat(g{:});
-            % and the path...
-            rmpath(oldfolder);
-
         end
         folder=[folder Version];
         % now let's do the real loading...
         if(~isdir(folder))
-            error(sprintf('Unable to load libray %s version %s',libname,Version));
+            % config_file (needs to be in harmony with setDefaultPath)
+            lib_require_folder = fileparts(mfilename('fullpath'))                 ;
+            config_file        = fullfile(lib_require_folder,'require_config.dat');
+
+            error(sprintf('Unable to load libray %s version %s from %s\nPlease edit the path manually in the config file:\n\nedit %s',libname,Version,folder,config_file));
         else
-            addpath(folder);
-            if(~bSilent)
-                fprintf('require:\t addding path %s\n',folder);
-            end
-            setfield(PATH,libname,'LOADED');
-            PATH.STRING=[PATH.STRING folder ':'];          
+            path_manager('add',folder);
         end
     end
 end

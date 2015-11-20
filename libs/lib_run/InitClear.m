@@ -1,9 +1,10 @@
 %% Cleaning
 clc;
 clearPath;
+clc;
 clear all;close all
 warning on;
-
+% 
 %% Getting Script info
 global SCRIPT;
 stk=dbstack(); % stk(1) is InitClear, stk(2) is the caller
@@ -42,7 +43,7 @@ setFigurePath({'/work/publications/phdthesis/figsdump/','./figs/'})
 setMatFigurePath({'/work/publications/phdthesis/matfig/', './matfig/'})
 
 set(0,'DefaultLineLineWidth',1.3)
- 
+%  
 % set(0,'DefaultAxesFontName','courier')
 %  set(0,'DefaultAxesFontName','cms serif')
  
@@ -65,7 +66,7 @@ clear('A');
 %disp(FigurePath)
 %
 %
-
+% 
 %% Set default user Paths
 if(exist('setDefaultPath','file'))
     setDefaultPath;

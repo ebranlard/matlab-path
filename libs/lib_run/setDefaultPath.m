@@ -1,63 +1,38 @@
-function setDefaultPath
-    clearPath                                                                   ; % just in case
-
-    global PATH
-    if ispc
-        % Windows
-        PATH.FLIB                = 'F:/fortran/_lib/windows-ia32/'                  ;
-        PATH.PHDTHESIS           = 'F:/Exchange/'                                   ;
-    else
-        % Vortex Codes
-        PATH.VL                  = '/work/libs/VortexCodes/VortexLattice/'           ;
-        PATH.VL_PRESC            = '/work/libs/VortexCodes/VortexLattice_Prescribed/';
-        PATH.VCYL                = '/work/libs/VortexCodes/VortexCylinders/'         ;
-        PATH.VC2D                = '/work/libs/VortexCodes/VortexCode2D/'            ;
-        PATH.VC2DKATZ            = '/work/libs/VortexCodes/VortexCode2D_Katz/'       ;
-        PATH.VC_LIB              = '/work/libs/VortexCodes/VC_lib/'                              ;
-        PATH.VC_LIB_C            = '/work/libs/VortexCodes/VC_lib/_Legacy/C/'                    ;
-        PATH.VC_LIB_MAT          = '/work/libs/VortexCodes/VC_lib/_Legacy/matlab/'               ;
+function setDefaultPath()
+    % Stores all the library directories stored in the config file into the global variables PATH
+    % The config file is in the smae directory as the current script.
+    % The file content is of the form where # is a comment
+    %     libname = 'directory/'
 
 
+    global PATH;
 
-        % Omnivor
-        PATH.FLIB                = '/work/libs/OmniVor/_src/_lib/linux-ia32/' ;
-        PATH.BEAR                = '/work/libs/OmniVor/matlab/Layer4_Bear/'      ;
-        PATH.COYOTE              = '/work/libs/OmniVor/matlab/Layer3_Coyote/'    ;
-        PATH.RACCOON             = '/work/libs/OmniVor/matlab/Layer2_Raccoon/'   ;
-        PATH.MOUFFETTE           = '/work/libs/OmniVor/matlab/Layer1_Mouffette/' ;
-        PATH.CHIPMUNK            = '/work/libs/chipmunk/matlab/'  ;
-        PATH.Environment         = '/work/libs/OmniVor/matlab/Environment/'      ;
-        PATH.OMNIVORLINK         = '/work/libs/OmniVor/matlab/Link/'             ;
-        PATH.Time                = '/work/libs/General/Time/'                                ;
-        PATH.Mesh                = '/work/libs/General/Mesh/'                                ;
-        PATH.SpecAn              = '/work/libs/General/SpectralAnalysis/'                    ;
+    % config_file (needs to be in harmony with require)
+    lib_require_folder = fileparts(mfilename('fullpath'))                 ;
+    config_file        = fullfile(lib_require_folder,'require_config.dat');
 
-
-        % ---   Wind Energy
-        PATH.BEM                 = '/work/libs/WindEnergy/BEM/'                        ;
-        PATH.WTlib               = '/work/libs/WindEnergy/WTlib/'                               ;
-        PATH.THEODORSEN          = '/work/libs/WindEnergy/WTTheory/Theodorsen/'                ;
-        PATH.OPTIMCIRC           = '/work/libs/WindEnergy/WTTheory/OptimalCirculation/'        ;
-        PATH.EXPANSION           = '/work/libs/WindEnergy/WTTheory/WakeExpansion/'             ;
-        PATH.Wind                = '/work/libs/WindEnergy/Wind/'                                ; % Used to be '/work/lib/OmniVor_lib/matlab/Wind/';
-
-        % --- Fluid MEch
-        PATH.PROFILES            = '/work/libs/FluidMechanics/Profiles/'            ;
-        PATH.POTFLOW             = '/work/libs/FluidMechanics/PotentialFlow/'       ;
-
-        % Data
-        PATH.TMP                 = '/work/tmp/'                                     ;
-        PATH.DATA_MOVIE          = '/work/movies/'                                  ;
-
-        PATH.DATA_IN             = '/work/data/'                                    ;
-        PATH.DATA_OUT            = '/work/data/'                                    ;
-        PATH.DATA_WT             = '/work/data/WT/'                                 ;
-
-        PATH.TIPLOSSDB           = '/work/data/BEM/TipLossDB/'                      ;
-
-
-        % OLD
-        %PATH.PHDTHESIS           = '/work/publications/phdthesis/'                  ;
-
-
+    % Opening config file
+    lib_require_folder = fileparts(mfilename('fullpath'))                 ;
+    fid=fopen(config_file,'r');
+    %     try
+    % Reading pairs of values libname=libfolder
+    pairs = textscan(fid, '%s %s', 'Delimiter', '=', 'EmptyValue', 0, 'CommentStyle', '#');
+    libnames   = pairs{1};
+    libfolders = pairs{2};
+    for i=1:length(libnames)
+        libname  =libnames{i};
+        libfolder=libfolders{i};
+        libfolder=strrep(libfolder,'''','');
+        libfolder=strrep(libfolder,';','');
+        libfolder=strrep(libfolder,' ','');
+        libname  =strrep(libname  ,' ','');
+        libfolder=fullfile([libfolder filesep]);
+        cmd=sprintf('PATH.%s=''%s'';;\n',libname,libfolder);
+        % Storing the PATH.libname=folder
+%         disp(cmd)
+        eval(cmd);
     end
+    %     catch
+    %         rethrow
+    %         fclose(fid);
+    %     end

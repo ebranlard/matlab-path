@@ -1,15 +1,27 @@
 function clearPath
-global PATH
+global PATH;
+
+
+
+% Removing paths found in PATH.STRING from matlab path
 if(isfield(PATH,'STRING') && ~isempty(PATH.STRING))
-    rmpath(PATH.STRING)
-    PATH.STRING='';
-    PATH=rmfield(PATH,'STRING');
+    path_manager('clean');
 end
-if(isfield(PATH,'STRING_TMP') && ~isempty(PATH.STRING_TMP))
-    rmpath(PATH.STRING_TMP)
-    PATH.STRING='';
-    PATH=rmfield(PATH,'STRING_TMP');
-end
+% Removing paths found in PATH.STRING_TMP from matlab path
+% if(isfield(PATH,'STRING_TMP') && ~isempty(PATH.STRING_TMP))
+%     paths=strsplit(PATH.STRING_TMP,PATH_SEP);
+%     for ip=1:length(paths)
+%         if ~isempty(paths(ip))
+%             rmpath(paths(ip))
+%         end
+%     end
+%     rmpath(PATH.STRING_TMP)
+%     PATH.STRING='';
+%     PATH=rmfield(PATH,'STRING_TMP');
+% end
+
+
+
 % a further security, but not general
 s=path;
 [startIndex, ~, ~, matchStr] = regexp(s, '/work/');
