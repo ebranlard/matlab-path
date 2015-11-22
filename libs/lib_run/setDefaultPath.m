@@ -14,25 +14,26 @@ function setDefaultPath()
     % Opening config file
     lib_require_folder = fileparts(mfilename('fullpath'))                 ;
     fid=fopen(config_file,'r');
-    %     try
-    % Reading pairs of values libname=libfolder
-    pairs = textscan(fid, '%s %s', 'Delimiter', '=', 'EmptyValue', 0, 'CommentStyle', '#');
-    libnames   = pairs{1};
-    libfolders = pairs{2};
-    for i=1:length(libnames)
-        libname  =libnames{i};
-        libfolder=libfolders{i};
-        libfolder=strrep(libfolder,'''','');
-        libfolder=strrep(libfolder,';','');
-        libfolder=strrep(libfolder,' ','');
-        libname  =strrep(libname  ,' ','');
-        libfolder=fullfile([libfolder filesep]);
-        cmd=sprintf('PATH.%s=''%s'';;\n',libname,libfolder);
-        % Storing the PATH.libname=folder
-%         disp(cmd)
-        eval(cmd);
+    if fid>0
+        % Reading pairs of values libname=libfolder
+        pairs = textscan(fid, '%s %s', 'Delimiter', '=', 'EmptyValue', 0, 'CommentStyle', '#');
+        libnames   = pairs{1};
+        libfolders = pairs{2};
+        for i=1:length(libnames)
+            libname  =libnames{i};
+            libfolder=libfolders{i};
+            libfolder=strrep(libfolder,'''','');
+            libfolder=strrep(libfolder,';','');
+            libfolder=strrep(libfolder,' ','');
+            libname  =strrep(libname  ,' ','');
+            libfolder=fullfile([libfolder filesep]);
+            cmd=sprintf('PATH.%s=''%s'';;\n',libname,libfolder);
+            % Storing the PATH.libname=folder
+    %         disp(cmd)
+            eval(cmd);
+        end
+        fclose(fid);
     end
     %     catch
     %         rethrow
-    %         fclose(fid);
     %     end
