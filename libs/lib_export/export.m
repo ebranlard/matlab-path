@@ -349,7 +349,15 @@ for i=1:length(figs)
             %,'width',FigureWidth,'height',FigureHeight
         else
            % Command for eps or png
-            hgexport(gcf,filename,MyStyle);
+           if bFigureDoNothing
+                MyStyle={};
+                % FORMAT PARAMETERS
+                MyStyle.Format= format;  %png or eps
+                MyStyle.Version= '1';
+                hgexport(gcf,filename,MyStyle);
+            else
+                hgexport(gcf,filename,MyStyle);
+            end
         end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
