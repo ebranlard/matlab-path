@@ -1,5 +1,5 @@
 function []=dispatchFigs(varargin)
-% Dispatch figures over the screens and not on top of each other
+% Dispatch figures over the screen(s)
 % E. Branlard June 2013
 %
 % dispatchFigs    : no arguments: dispatch the figure on the screens without resizing figures
@@ -82,7 +82,7 @@ elseif(nMonitors==2)
     end
 
 else
-    error('Script writtent in a naive way, generalization for n monitors todo')
+    error('Script written in a naive way, generalization for n monitors todo')
 end
 if(nargin==0 || (nargin==1 && varargin{1}==0))
     % --------------------------------------------------------------------------------

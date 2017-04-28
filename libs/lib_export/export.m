@@ -54,6 +54,11 @@ if(isempty(bFigureDoNothing))
     bFigureDoNothing=0;  % default is actually doing something
 end
 
+% Transparent
+global bFigureTransparent
+if(isempty(bFigureTransparent))
+    bFigureTransparent=true;
+end
 
 
 
@@ -152,7 +157,11 @@ MyStyle.LineWidthMin= '0.1';
 %MyStyle.FixedLineWidth= '1.2';
 %MyStyle.ScaledLineWidth= '1.5';
 % MyStyle.Preview= 'none';
-MyStyle.Background= 'w';
+if ~bFigureTransparent
+    MyStyle.Background= 'w';
+else
+    MyStyle.Background= 'none';
+end
 
 MyStyle.LineStyleMap= 'none'; %bw to let matlab do it
 % MyStyle.ApplyStyle= '0';
@@ -277,6 +286,9 @@ for i=1:length(figs)
     set(gcf,'color','w'); % white background in case we do nothing
     if ~bFigureDoNothing
         hgexport(hfig,tempname,MyStyle,'applystyle', true);
+%         if bFigureTransparent
+%             set(gcf(),'Color','none')
+%         end
     end
     
     %     box on
@@ -320,11 +332,7 @@ for i=1:length(figs)
 
         filename=sprintf('%s%s.%s',FigurePath{ifp},figName,MyStyle.Format);
 %         fprintf('Path %s\n',FigurePath{ifp});
-        if(isequal(format,'pdf'))           
-            % Complex command for pdf
-%             keyboard
-             export_fig(hfig,filename)
-        elseif(isequal(format,'tkz'))
+        if(isequal(format,'tkz'))
             title('')
             if(constrained)
                 ratio=1
@@ -345,19 +353,23 @@ for i=1:length(figs)
             else
                 matlab2tikz(filename,'width','\fwidth','height',sprintf('%.3f\\fwidth',ratio));
             end
-%             matlab2tikz(filename,'width',[FigureWidth 'cm'],'height',[FigureHeight 'cm']);
-            %,'width',FigureWidth,'height',FigureHeight
+%             matlab2tikz(filename,'width',[FigureWidth 'cm'],'height',[FigureHeight 'cm']); ,'width',FigureWidth,'height',FigureHeight
         else
-           % Command for eps or png
-           if bFigureDoNothing
-                MyStyle={};
-                % FORMAT PARAMETERS
-                MyStyle.Format= format;  %png or eps
-                MyStyle.Version= '1';
-                hgexport(gcf,filename,MyStyle);
+            if bFigureTransparent
+                export_fig(hfig,filename,'-transparent')
             else
-                hgexport(gcf,filename,MyStyle);
+                export_fig(hfig,filename)
             end
+           % Command for eps or png
+%            if bFigureDoNothing
+%                 MyStyle={};
+%                 % FORMAT PARAMETERS
+%                 MyStyle.Format= format;  %png or eps
+%                 MyStyle.Version= '1';
+%                 hgexport(gcf,filename,MyStyle);
+%             else
+%                 hgexport(gcf,filename,MyStyle);
+%             end
         end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
