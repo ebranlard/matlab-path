@@ -64,16 +64,20 @@ end
 % --- Main public functions: constructor, read and write
 % --------------------------------------------------------------------------------
 methods
-    function o=FileCl(file_path)
+    function o=FileCl(varargin)
+        % Constructor for the FileCl
+        % INPUTS:
+        %    Nothing
+        %    OR
+        %    First argument is a filename
         if nargin==0
             o.setFilepath('');
-        elseif nargin==1
-            if ~isempty(file_path) 
-                o.setFilepath(file_path);
-                %o.read();
-            end
+        elseif nargin>=1
+            % First argument is filename
+            o.setFilepath(varargin{1});
+            %o.read();
         else
-            error('Wrong number of arguments');
+           % fine, it's up to our children to handle the remaining arguments
         end
     end
 
@@ -103,7 +107,7 @@ methods
             o.fid=fopen(o.filepath,'r');
             o.bReadOnly = true ;
             o.read_();
-            o.fid=fclose(o.fid);
+            if o.fid>0; o.fid=fclose(o.fid); end
         catch me
             if o.fid>0; o.fid=fclose(o.fid); end
             fprintf(2,'[FAIL] Problem reading %s, see error below:\n',o.filepath);
@@ -155,9 +159,9 @@ methods
             % --- Opening file for writing and calling children function write_
             o.fid=fopen(file_name,'w');
             o.write_();
-            o.fid=fclose(o.fid);
+            o.closeFile();
         catch me
-            if o.fid>0; o.fid=fclose(o.fid); end
+            o.closeFile();
             fprintf('[FAIL] Problem writing %s, see error below:\n',file_name);
             fprintf('%s\n\n',me.message);
             fprintf('Call stack:\n');
@@ -175,6 +179,44 @@ methods
         [~,o.filename] = os_path.split(o.filepath);
     end
 
+
+    % --------------------------------------------------------------------------------}
+    %% --- Test Function 
+    % --------------------------------------------------------------------------------{
+    function o=test(o,TestFileName)
+        % Tries to read a file and write it back and compare the differences
+        % If the current object represents a file already read, the read function is not called
+        % Otherwise, for the safe of testing, the file is read.
+        % Then the file is written.
+        % Last the files are compared (in a crude way)
+
+        % Read file if not already done
+        if exist('TestFileName','var')
+            o.read(TestFileName);
+        else
+            if isempty(o.filepath)
+                error('FileCl Test requires reading first')
+            end
+        end
+        % Defining input and output filenames
+        [Dir,Base,Ext]=fileparts(o.filepath);
+        filein = o.filepath;
+        fileout= os_path.join(Dir,[Base '_out' Ext]);
+        % Writing back the current file
+        o.write(fileout);
+        % Resetting to "input file"
+        o.setFilepath(filein);
+        % Comparing files
+        f1=fileread(filein);
+        f2=fileread(fileout);
+        b=strcmp(f1,f2);
+        if b; s='[ OK ]'; else s='[FAIL]'; end;
+        fprintf('%s Read/Write test: %s(%s)\n',s,class(o),o.filename);
+        % Deleting out file if test succeeded
+        if b; delete(fileout); end;
+    end % test
+
+
 end % public methods
 
 
@@ -191,6 +233,9 @@ methods(Access = protected, Hidden = true)
     function read_(o)
     end
     function write_(o)
+    end
+    function closeFile(o)
+        if o.fid>0; o.fid=fclose(o.fid); end
     end
 end % methods
 
@@ -300,8 +345,9 @@ methods(Access = protected, Hidden = true)
 
     function varargout = fgetl_floats(o,n,bDontAbort)
         % Reads the first n floats on a line. The rest of the line is disarded (and lost..).
-        % n may be omitted in which case n is determined using the number of output arguments
-        % bDontAbort: if set to true, abort is not called and the file is not closed on error
+        % - n may be omitted in which case n is determined using the number of output arguments
+        % - If n is -1, then as many successive floats as possible are read on the line
+        % - bDontAbort: if set to true, abort is not called and the file is not closed on error
 
         % Default variables
         if ~exist('n','var');          n=nargout;        end;
@@ -312,16 +358,15 @@ methods(Access = protected, Hidden = true)
             if n==-1
                 format = '%f ';
                 A = textscan(l,format);
-                if isempty(A{1});            error('empty');     end;
                 n=length(A);
             else
                 format = [repmat('%f ',1,n) '%*s'];
                 A = textscan(l,format,1);
                 % Checks
                 if any(cellfun(@isempty,A)); error('wrong size'); end;
-                if length(A)~=n;             error('wrong size'); end;
-                if isempty(A{1});            error('empty');     end;
             end
+            if length(A)~=n;             error('wrong size'); end;
+            if isempty(A{1});            error('empty');     end;
             % Returning 
             if nargout==1 && n>1
                 varargout{1}=[A{:}];
@@ -342,17 +387,23 @@ methods(Access = protected, Hidden = true)
 
     function varargout = fgetl_ints(o,n)
         % Reads the first n integers on a line. The rest of the line is disarded (and lost..).
-        % n may be omitted in which case n is determined using the number of output arguments
-
+        % - n may be omitted in which case n is determined using the number of output arguments
+        % - If n is -1, then as many successive ints as possible are read on the line
         % Default variable
         if ~exist('n','var'); n=nargout; end;
         % Reading line as string
         l=o.fgetl(); 
         try
-            format = [repmat('%d ',1,n) '%*s'];
-            A = textscan(l,format,1);
-            % Checks
-            if any(cellfun(@isempty,A)); error('wrong size'); end;
+            if n==-1
+                format = '%d ';
+                A = textscan(l,format);
+                n=length(A);
+            else
+                format = [repmat('%d ',1,n) '%*s'];
+                A = textscan(l,format,1);
+                % Checks
+                if any(cellfun(@isempty,A)); error('wrong size'); end;
+            end
             if length(A)~=n;             error('wrong size'); end;
             if isempty(A{1});            error('empty');     end;
             % Returning 

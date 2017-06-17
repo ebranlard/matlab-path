@@ -1,1 +1,6 @@
 *.dat
+matlab_toolboxes
+libs/lib_map
+chipmunk*
+libs/GetTools.bat
+*other*
