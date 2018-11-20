@@ -466,6 +466,12 @@ function print2eps(name, fig, export_options, varargin)
     end
 
     % Apply the bounding box padding & cropping, replacing Matlab's print()'s bounding box
+
+    disp('>>>MANU HACK IN PRINT2EPS');
+    bb_crop=1;
+    crop_amounts = [5 3 3 3]; % top right bottom left
+
+
     if bb_crop
         % Calculate a new bounding box based on a bitmap print using crop_border.m
         % 1. Determine the Matlab BoundingBox and PageBoundingBox
@@ -490,17 +496,20 @@ function print2eps(name, fig, export_options, varargin)
         %bb_new = [pagebb_matlab(1)+pagew*bb_rel(1) pagebb_matlab(2)+pageh*bb_rel(2) ...
         %          pagebb_matlab(1)+pagew*bb_rel(3) pagebb_matlab(2)+pageh*bb_rel(4)];
         bb_new = pagebb_matlab([1,2,1,2]) + [pagew,pageh,pagew,pageh].*bb_rel;  % clearer
-        bb_offset = (bb_new-bb_matlab) + [-2,-2,2,2];  % 2px margin so that cropping is not TOO tight (issue #195)
+        % MANU HACK
+        %bb_offset = (bb_new-bb_matlab) + [-2,-2,2,2];  % 2px margin so that cropping is not TOO tight (issue #195)
+        bb_offset = (bb_new-bb_matlab) + [-1,-1,1,1];  % 2px margin so that cropping is not TOO tight (issue #195)
 
         % Apply the bounding box padding
-        if bb_padding
-            if abs(bb_padding)<1
-                bb_padding = round((mean([bb_new(3)-bb_new(1) bb_new(4)-bb_new(2)])*bb_padding)/0.5)*0.5; % ADJUST BB_PADDING
-            end
-            add_padding = @(n1, n2, n3, n4) sprintf(' %.0f', str2double({n1, n2, n3, n4}) + bb_offset + bb_padding*[-1,-1,1,1]); %#ok<NASGU>
-        else
+         % MANU HACK
+%         if bb_padding
+%             if abs(bb_padding)<1
+%                 bb_padding = round((mean([bb_new(3)-bb_new(1) bb_new(4)-bb_new(2)])*bb_padding)/0.5)*0.5; % ADJUST BB_PADDING
+%             end
+%             add_padding = @(n1, n2, n3, n4) sprintf(' %.0f', str2double({n1, n2, n3, n4}) + bb_offset + bb_padding*[-1,-1,1,1]); %#ok<NASGU>
+%         else
             add_padding = @(n1, n2, n3, n4) sprintf(' %.0f', str2double({n1, n2, n3, n4}) + bb_offset); %#ok<NASGU> % fix small but noticeable bounding box shift
-        end
+%         end
         fstrm = regexprep(fstrm, '%%BoundingBox:[ ]+([-]?\d+)[ ]+([-]?\d+)[ ]+([-]?\d+)[ ]+([-]?\d+)', '%%BoundingBox:${add_padding($1, $2, $3, $4)}');
     end
 

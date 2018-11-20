@@ -233,7 +233,12 @@ switch options.renderer
         renderer = '-opengl'; % Default for bitmaps
 end
 % Do the bitmap formats first
-if isbitmap(options)
+if isbitmap(options) 
+    isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+    if isOctave
+        options.alpha=0;
+        options.transparent=0;
+    end
     % Get the background colour
     if options.transparent && (options.png || options.alpha)
         % Get out an alpha channel
@@ -265,7 +270,9 @@ if isbitmap(options)
         % Print large version to array
         B = print2array(fig, magnify, renderer);
         % Downscale the image
-        B = downsize(single(B), options.aa_factor);
+        if ~isOctave
+            B = downsize(single(B), options.aa_factor);
+        end
         % Set background to white (and set size)
         set(fig, 'Color', 'w', 'Position', pos);
         % Correct the colorbar axes colours
@@ -274,7 +281,9 @@ if isbitmap(options)
         % Print large version to array
         A = print2array(fig, magnify, renderer);
         % Downscale the image
-        A = downsize(single(A), options.aa_factor);
+        if ~isOctave
+            A = downsize(single(A), options.aa_factor);
+        end
         % Set the background colour (and size) back to normal
         set(fig, 'Color', tcol, 'Position', pos);
         % Compute the alpha map
@@ -287,6 +296,7 @@ if isbitmap(options)
         if options.colourspace == 2
             A = rgb2grey(A);
         end
+        keyboard
         A = uint8(A);
         % Crop the background
         if options.crop
@@ -294,10 +304,14 @@ if isbitmap(options)
             A = A(v(1):v(2),v(3):v(4),:);
         end
         if options.png
-            % Compute the resolution
-            res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
             % Save the png
-            imwrite(A, [options.name '.png'], 'Alpha', double(alpha), 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+            if isOctave
+                imwrite(A, [options.name '.png'], 'Alpha', double(alpha));
+            else
+                % Compute the resolution
+                res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
+                imwrite(A, [options.name '.png'], 'Alpha', double(alpha), 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+            end
             % Clear the png bit
             options.png = false;
         end
@@ -340,7 +354,9 @@ if isbitmap(options)
             A = crop_background(A, tcol);
         end
         % Downscale the image
-        A = downsize(A, options.aa_factor);
+        if ~isOctave
+            A = downsize(A, options.aa_factor);
+        end
         if options.colourspace == 2
             % Convert to greyscale
             A = rgb2grey(A);
@@ -359,8 +375,12 @@ if isbitmap(options)
     end
     % Save the images
     if options.png
-        res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
-        imwrite(A, [options.name '.png'], 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+        if isOctave
+            imwrite(A, [options.name '.png'])
+        else
+            res = options.magnify * get(0, 'ScreenPixelsPerInch') / 25.4e-3;
+            imwrite(A, [options.name '.png'], 'ResolutionUnit', 'meter', 'XResolution', res, 'YResolution', res);
+        end
     end
     if options.bmp
         imwrite(A, [options.name '.bmp']);

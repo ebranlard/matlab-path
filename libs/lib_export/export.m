@@ -14,6 +14,13 @@ end
 if(~iscell(FigurePath))
     FigurePath={FigurePath};
 end
+for iFP = 1:length(FigurePath)
+    if FigurePath{iFP}(end)~='/' || FigurePath{iFP}(end)~='\'
+        FigurePath{iFP}=[FigurePath{iFP} '/'];
+    end
+end
+FigurePath
+
 global MatFigurePath
 if(isempty(MatFigurePath))
     MatFigurePath={'./matfig/'};
@@ -183,12 +190,12 @@ end
 for ifp=1:length(FigurePath)
     % Creating directory if it doesn't exist
     if ~exist(FigurePath{ifp},'dir')
-        prompt = sprintf('Directory %s does not exist.\n Do you want to create it? Y/N [Y]: ',FigurePath{ifp});
+        prompt = sprintf('Directory %s does not exist.\n Do you want to create it? y/n [y]: ',FigurePath{ifp});
         str = input(prompt,'s');
         if isempty(str)
-            str = 'Y';
+            str = 'y';
         end
-        if isequal(str,'Y')
+        if isequal(lower(str),'y')
             mkdir(FigurePath{ifp});
         end
     end
@@ -285,7 +292,11 @@ for i=1:length(figs)
 
     set(gcf,'color','w'); % white background in case we do nothing
     if ~bFigureDoNothing
-        hgexport(hfig,tempname,MyStyle,'applystyle', true);
+        try
+            hgexport(hfig,tempname,MyStyle,'applystyle', true);
+        catch
+            warning('hgexport not supported, you are probably using Octave')
+        end
 %         if bFigureTransparent
 %             set(gcf(),'Color','none')
 %         end
