@@ -23,26 +23,39 @@ methods(Static=true,Hidden=true);
     function test()
         clear all;
         fprintf('isabs: ');
+        fprintf('%d', os_path.isabs('')==false);
         fprintf('%d', os_path.isabs('/'));
         fprintf('%d', os_path.isabs('\'));
+        fprintf('%d', os_path.isabs('\a\b'));
+        fprintf('%d', os_path.isabs('/a/b'));
         fprintf('%d', os_path.isabs('C:\'));
         fprintf('%d', os_path.isabs('C:')==false);
         fprintf('%d', os_path.isabs('aa/b')==false);
         fprintf('%d', os_path.isabs('\\host\')==false);
         fprintf('%d', os_path.isabs('\\host\mount\'));
         fprintf('\n');
-
+% 
+% %%
         fprintf('join: ');
         fprintf('%d', isequal(os_path.join('',''), '') );
         fprintf('%d', isequal(os_path.join('/',''), '/') );
         fprintf('%d', isequal(os_path.join('/a'   ,'/b'), '/b') );   % Two absolute paths
-        fprintf('%d', isequal(os_path.join('C:\a' ,'/b'), 'C:/b') ); % Two absolute paths with first as drive letter
+        fprintf('%d', isequal(os_path.join('C:\a' ,'/b'), 'C:/b') ); % Two absolute paths
+        fprintf('%d', isequal(os_path.join('\\server\drive\a' ,'/b'), '\\server\drive/b') ); % Two absolute paths 
+        fprintf('%d', isequal(os_path.join('C:'   ,'b' ), 'C:b' ) ); 
+        fprintf('%d', isequal(os_path.join('C:'   ,'\b'), 'C:\b') ); 
         fprintf('%d', isequal(os_path.join('C:\a' ,'b' ), 'C:\a\b') ); 
         fprintf('%d', isequal(os_path.join('C:\a\','b' ), 'C:\a\b') ); 
         fprintf('%d', isequal(os_path.join('C:/a/','b' ), 'C:/a/b') ); 
         fprintf('%d', isequal(os_path.join('a','b' )    , 'a\b') ); 
         fprintf('%d', isequal(os_path.join('a/..','../b' ),'a/..\../b') ); 
+        fprintf('%d', isequal(os_path.join('C:\a\','C:\b' ),'C:\b') ); 
+        fprintf('%d', isequal(os_path.join('C:\a\','\\server\drive\b' ),'\\server\drive\b') ); 
+        fprintf('%d', isequal(os_path.join('a','b','c' ),'a\b\c')); 
+        fprintf('%d', isequal(os_path.join('a','b','C:'),'C:')); 
+        fprintf('%d', isequal(os_path.join('a','b','/c'),'/c')); 
         fprintf('\n');
+        %%
 
         fprintf('normpath: ');
         fprintf('%d', isequal(os_path.normpath('.'          ) , '.') );
@@ -77,6 +90,7 @@ methods(Static=true,Hidden=true);
         fprintf('%d', isequal(os_path.abspath('c\..\a') , 'C:\Windows\a') ); 
         fprintf('%d', isequal(os_path.abspath('..\..\..\..')   , 'C:\') ); 
         fprintf('%d', isequal(os_path.abspath('..\..\..\..\a') , 'C:\a') ); 
+        fprintf('%d', isequal(os_path.abspath('\\Server\Drive\a') , '\\Server\Drive\a') ); 
         fprintf('\n');
         cd(OldPath);
 
@@ -94,10 +108,14 @@ methods(Static=true,Hidden=true);
         [a,b]=os_path.splitdrive('C:');              fprintf('%d',isequal(a,'C:')      && isempty(b));
         [a,b]=os_path.splitdrive('C:\dir\');         fprintf('%d',isequal(a,'C:')      && isequal(b,'\dir\'));
         [a,b]=os_path.splitdrive('\dir');            fprintf('%d',isempty(a)           && isequal(b,'\dir'));
+        [a,b]=os_path.splitdrive('/dir');            fprintf('%d',isempty(a)           && isequal(b,'/dir'));
         [a,b]=os_path.splitdrive('\\host');          fprintf('%d',isempty(a)           && isequal(b,'\\host'));
         [a,b]=os_path.splitdrive('\\host\');         fprintf('%d',isequal(a,'\\host\') && isempty(b));
         [a,b]=os_path.splitdrive('\\host\mount');    fprintf('%d',isequal(a,'\\host\mount')&& isequal(b,''));
         [a,b]=os_path.splitdrive('\\host\mount\dir');fprintf('%d',isequal(a,'\\host\mount')&& isequal(b,'\dir'));
+        [a,b]=os_path.splitdrive('//host/mount/dir');fprintf('%d',isequal(a,'//host/mount')&& isequal(b,'/dir'));
+        [a,b]=os_path.splitdrive('//host/mount/dir');fprintf('%d',isequal(a,'//host/mount')&& isequal(b,'/dir'));
+        [a,b]=os_path.splitdrive('C:/dir/');         fprintf('%d',isequal(a,'C:')      && isequal(b,'/dir/'));
         fprintf('\n');
 
         fprintf('splitunc: ');
@@ -109,6 +127,12 @@ methods(Static=true,Hidden=true);
         [a,b]=os_path.splitunc('\\a\b');   fprintf('%d',isequal(a,'\\a\b') && isempty(b));
         [a,b]=os_path.splitunc('\\a\b\');  fprintf('%d',isequal(a,'\\a\b') && isequal(b,'\'));
         [a,b]=os_path.splitunc('\\a\b\c'); fprintf('%d',isequal(a,'\\a\b') && isequal(b,'\c'));
+        fprintf('\n');
+
+        fprintf('basename: ');
+        fprintf('%d', isequal(os_path.basename('a.txt') , 'a.txt')); 
+        fprintf('%d', isequal(os_path.basename('C:\a\') , blanks(0)) ); 
+        fprintf('%d', isequal(os_path.basename('C:\a' ) , 'a') ); 
         fprintf('\n');
 
     end
@@ -124,6 +148,7 @@ methods(Static=true);
     % --------------------------------------------------------------------------------{
     function d=abspath(p)
         % Return a normalized absolutized version of the pathname path. On most platforms, this is equivalent to calling the function normpath() as follows: normpath(join(os.getcwd(), path))
+%         keyboard
         d=os_path.normpath( os_path.join( pwd(), p ) );
     end
 
@@ -212,56 +237,63 @@ methods(Static=true);
     % --------------------------------------------------------------------------------}
     %% --- join 
     % --------------------------------------------------------------------------------{
-    function p=join(p1,p2,varargin)
+    function p_out=join(path,varargin)
         % Join one or more path components intelligently. The return value is the concatenation of path and any members of *paths with exactly one directory separator (os.sep) following each non-empty part except the last, meaning that the result will only end in a separator if the last part is empty. If a component is an absolute path, all previous components are thrown away and joining continues from the absolute path component.
         % 
         % On Windows, the drive letter is not reset when an absolute path component (e.g., r'\foo') is encountered. If a component contains a drive letter, all previous components are thrown away and the drive letter is reset. Note that since there is a current directory for each drive, os.path.join("c:", "foo") represents a path relative to the current directory on drive C: (c:foo), not c:\foo.
-
-        if ~exist('p2','var'); 
-            p=p1; 
-            return
-        end
-
-        [good_slash]=os_path.get_slashes();
-        % See which ones are absolute paths
-        if isempty(p1)
-            p=p2; % all previous components are thrown away
-        elseif os_path.isabs(p2) 
-            % TODO UNC Path //
-            if ispc() && (p2(1)=='\' || p2(1)=='/')
-                if os_path.isabs(p1) 
-                    if (p1(1)=='\' || p1(1)=='/')
-                        p=p2;
-                    elseif ischar(p1(1)) 
-                        p=[p1(1:2) p2]; % Keeping drive letter
-                    else
-                        p=p2;
-                    end
-                else
-                    p=[p1 p2];
-                end
-            else
-                p=p2; % all previous components are thrown away
-            end
-        else
-            % --- Joining p1 and p2
-            % TODO: ensure only one slash
-            if p1(end)=='\' || p1(end) == '/'
-                p=[p1 p2];
-            else
-                p=[p1 good_slash p2];
-            end
-        end
-
-        % --- Recursive call
-        if ~isempty(varargin)>0
-            p=os_path.join(p,varargin{:});
-        end
-        % NOTE: Python implementation
+       % --- CODE BELOW FOLLOW PYTHON IMPLEMENTATION
+       paths=varargin;
+       sep = '\';
+       [result_drive, result_path]=os_path.splitdrive(path);
+       for ip = 1:length(paths)
+           p=paths{ip};
+%         for ip=1
+%            p=p2;
+           [p_drive, p_path] = os_path.splitdrive(p);
+           if ~isempty(p_path) && (p_path(1)=='/' || p_path(1)=='\')
+               % Second path is absolute
+               if ~isempty(p_drive) || isempty(result_drive) 
+                   result_drive = p_drive;
+               end
+               result_path = p_path;
+               continue;
+           elseif ~isempty(p_drive) && ~isequal(p_drive,result_drive)
+               if ~isequal(lower(p_drive),lower(result_drive))
+                   % Different drives => ignore the first path entirely
+                   result_drive = p_drive;
+                   result_path  = p_path;
+                   continue
+               end
+               % Same drive in different case
+               result_drive = p_drive;
+           else
+           end
+           % Second path is relative to the first
+           if ~isempty(result_path ) && (result_path(end)~='/' && result_path(end)~='\')
+               result_path = strcat(result_path,sep);
+           end;
+           result_path = strcat(result_path,p_path);
+       end % for on paths
+       % Return
+       if (~isempty(result_path) && (result_path(1)~='/' && result_path(1)~='\') && ~isempty(result_drive) && result_drive(end)~=':')
+           % add separator between UNC and non-absolute path
+           p_out = [result_drive sep result_path];
+       else
+           p_out = [result_drive result_path];
+       end
+        %fprintf('\n    p1=%s \t  p2=%s \t result=%s   \t \t  drive=%s\t  path=%s  \t ',path,p2,p_out,result_drive,result_path);
+        %--- PYTHON IMPLEMENTATION
+        % def join(path, *paths):
+        %    path = os.fspath(path)
+        %    sep = '\\'
+        %    seps = '\\/'
+        %    colon = ':'
+        %    if not paths:
+        %        path[:0] + sep  #23780: Ensure compatible data type even if p is null.
         %     result_drive, result_path = splitdrive(path)
-        %     for p in paths:
+        %    for p in map(os.fspath, paths):
         %         p_drive, p_path = splitdrive(p)
-        %         if p_path and p_path[0] in '\\/':
+        %        if p_path and p_path[0] in seps:
         %             # Second path is absolute
         %             if p_drive or not result_drive:
         %                 result_drive = p_drive
@@ -276,12 +308,12 @@ methods(Static=true);
         %             # Same drive in different case
         %             result_drive = p_drive
         %         # Second path is relative to the first
-        %         if result_path and result_path[-1] not in '\\/':
-        %             result_path = result_path + '\\'
+        %        if result_path and result_path[-1] not in seps:
+        %            result_path = result_path + sep
         %         result_path = result_path + p_path
         %     ## add separator between UNC and non-absolute path
-        %     if (result_path and result_path[0] not in '\\/' and
-        %         result_drive and result_drive[-1:] != ':'):
+        %    if (result_path and result_path[0] not in seps and
+        %        result_drive and result_drive[-1:] != colon):
         %         return result_drive + sep + result_path
         %     return result_drive + result_path
     end

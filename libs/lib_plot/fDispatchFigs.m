@@ -12,10 +12,10 @@ function []=fDispatchFigs(varargin)
 %
 %% Parameters
 %
-hWin=60;      %<<<<<<<< Height of matlab toolbar + window manager
+hWin=65;      %<<<<<<<< Height of matlab toolbar + window manager
 
 % Extent of menu bars:   TODO: Make this screen-wise
-xMenuBarLeft   = 110;
+xMenuBarLeft   = 140;
 xMenuBarRight  = 0;
 yMenuBarTop    = 0  ;
 yMenuBarBottom = 0  ;

@@ -112,6 +112,7 @@ methods
             if o.fid>0; o.fid=fclose(o.fid); end
             fprintf(2,'[FAIL] Problem reading %s, see error below:\n',o.filepath);
             fprintf(2,'%s\n\n',me.message);
+            fprintf(2,'For debugging, use the command: dbstop if error\n\n');
             fprintf('Call stack:\n');
             rethrow(me)
         end
@@ -157,13 +158,14 @@ methods
         o.check_extension(file_name);
         try
             % --- Opening file for writing and calling children function write_
-            o.fid=fopen(file_name,'w');
+            o.fid=fopen(file_name,'W'); % using 'W' instead of 'w' speeds up IO since flushing is done at the end.
             o.write_();
             o.closeFile();
         catch me
             o.closeFile();
-            fprintf('[FAIL] Problem writing %s, see error below:\n',file_name);
-            fprintf('%s\n\n',me.message);
+            fprintf(2,'[FAIL] Problem writing %s, see error below:\n',file_name);
+            fprintf(2,'%s\n\n',me.message);
+            fprintf(2,'For debugging, use the command: dbstop if error\n\n');
             fprintf('Call stack:\n');
             rethrow(me)
         end
@@ -210,7 +212,7 @@ methods
         f1=fileread(filein);
         f2=fileread(fileout);
         b=strcmp(f1,f2);
-        if b; s='[ OK ]'; else s='[FAIL]'; end;
+        if b; s='[ OK ]'; else; s='[FAIL]'; end;
         fprintf('%s Read/Write test: %s(%s)\n',s,class(o),o.filename);
         % Deleting out file if test succeeded
         if b; delete(fileout); end;
@@ -220,6 +222,15 @@ methods
 end % public methods
 
 
+methods(Access = protected)
+    % --------------------------------------------------------------------------------
+    % --- Copy
+    % --------------------------------------------------------------------------------
+    function a=copyElement(o)
+        a=copyElement@matlab.mixin.Copyable(o); % Shallow copy
+        a.bReadOnly=false;
+    end
+end % protected methods
 
 
 
@@ -454,6 +465,40 @@ methods(Access = protected, Hidden = true)
 %                 varargout=A;
 %             end
         varargout{1}=[A{:}];
+    end
+
+    % --------------------------------------------------------------------------------}
+    %% --- Extracting variables from a line 
+    % --------------------------------------------------------------------------------{
+    function varargout = getl_var(o,l,var_type,n)
+        % Reads the first n variables on a line. The rest of the line is discarded (and lost..).
+        % - n may be omitted in which case n is determined using the number of output arguments
+        % - If n is -1, then as many successive floats as possible are read on the line
+        % Default variables
+        if ~exist('n','var');          n=nargout;        end;
+        % Reading line as string 
+        if isempty(strfind('fds',var_type))
+            error('Var type needs to be: f d s');
+        end
+        var_type = ['%' var_type];
+        if n==-1
+            format = [var_type ' '];
+            A = textscan(l,format);
+            n=length(A);
+        else
+            format = [repmat([var_type ' '],1,n) '%*s'];
+            A = textscan(l,format,1);
+            % Checks
+            if any(cellfun(@isempty,A)); error('wrong size'); end;
+        end
+        if length(A)~=n;             error('wrong size'); end;
+        if isempty(A{1});            error('empty');     end;
+        % Returning 
+        if nargout==1 && n>1
+            varargout{1}=[A{:}];
+        else
+            varargout=A;
+        end
     end
 
 
