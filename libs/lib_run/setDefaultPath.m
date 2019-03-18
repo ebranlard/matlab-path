@@ -33,6 +33,7 @@ function setDefaultPath()
             eval(cmd);
         end
         fclose(fid);
+        fprintf('setDefaultPath: found %d libs in file %s\n',length(libnames),config_file)
     end
     %     catch
     %         rethrow

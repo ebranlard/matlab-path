@@ -1,5 +1,5 @@
 function s=fpad(s,len,side,padCharacter)
-    % Quick and dirty implementation of matlab pad funciton available in Matlab2017
+    % Quick and dirty implementation of matlab pad function available in Matlab2017
 
     if iscell(s)
         %len=max(cellfun(@(ss)length(ss),s))

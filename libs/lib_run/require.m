@@ -35,11 +35,16 @@ else
 
     % --- Handling if the field/libname is not present in variable PATH
     if ~isfield(PATH,libname) 
-        % Test whether we have ui available
-        if usejava('jvm') && ~feature('ShowFigureWindows')
+        isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+        if isOctave
             bUI=false;
         else
-            bUI=true;
+            % Test whether we have ui available
+            if usejava('jvm') && ~feature('ShowFigureWindows')
+                bUI=false;
+            else
+                bUI=true;
+            end
         end
 
         % config_file (needs to be in harmony with setDefaultPath)
@@ -89,22 +94,47 @@ else
 
     % --- 
     folder=getfield(PATH,libname);
+    if(~isdir(folder))
+        % config_file (needs to be in harmony with setDefaultPath)
+        lib_require_folder = fileparts(mfilename('fullpath'))                 ;
+        config_file        = fullfile(lib_require_folder,'require_config.dat');
+
+        error('Unable to load libray %s, the folder does not exist: %s\n',libname,folder);
+    end
+    %
 
 
     % ---  Getting proper version of library
-    vers=dir([folder 'v*']);
     if isequal(Version,'latest')
+        fold_content=dir(folder);
         % we load the latest version
-        vnum=zeros(1,length(vers));
-        for iv =1:length(vers)
-            vnum(iv) =str2num(vers(iv).name(2:3));
+        vnum   = nan(1,length(fold_content));
+        IValid = false(1,length(fold_content));
+        FoldNames = cell(1,length(fold_content));
+        for iFold =1:length(fold_content)
+            FoldNames{iFold} = fold_content(iFold).name;
+            if fold_content(iFold).name(1)=='v'
+                IValid(iFold)=true;
+                vnum(iFold) =str2num(fold_content(iFold).name(2:3));
+            else
+                IValid(iFold)=false;
+            end
+        end
+        vnum     = vnum(IValid);
+        FoldNames = FoldNames(IValid);
+        if isempty(vnum)
+            error('Not folder starting with `v` found in %s',folder)
         end
         [s I]=sort(vnum);
         %         keyboard
-        Version=vers(I(end)).name;
+        Version=FoldNames{I(end)};
     end
 
 
+    if exist('OCTAVE_VERSION', 'builtin') ~= 0;
+        PATH.STRING = strrep(PATH.STRING,'\','/');
+        folder      = strrep(folder     ,'\','/');
+    end
     [startIndex, ~, ~, matchStr] = regexp(PATH.STRING, [folder '[a-zA-Z0-9_-]*']);
     if(length(startIndex)>1)
         error('this should not happen, it means the same library has been loaded twice');

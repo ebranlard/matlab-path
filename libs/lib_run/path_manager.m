@@ -1,7 +1,7 @@
-function varargout=path_manager(action,action_paths,h)
+function [] = path_manager(action,action_paths,h)
     % path_manager: handles matlabpath without polutting it. 
     %    It uses a global variables for now to store the paths added to the path
-    varargout=[];
+    % varargout=cell;
     PATH_SEP='|:|'; % string used to separate path within
 
     % --------------------------------------------------------------------------------

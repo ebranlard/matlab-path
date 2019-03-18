@@ -1,7 +1,7 @@
 function u = fMeanAngle(phi)
     %% Test
     if nargin==0
-        vphi=[0 pi/2 pi ];
+        vphi=[0 pi/2 pi 2*pi];
         fMeanAngle(vphi)
         xm=mean(cos(vphi));
         ym=mean(sin(vphi));
@@ -15,5 +15,5 @@ function u = fMeanAngle(phi)
         warning('Most likely you intend to call fMeanAngled not fMeanAngle')
     end
     % Returns the average of the anple phi, in radians
-	u = mod(angle(nanmean(exp(1i*phi))),2*pi);
+	u = mod(angle(mean(exp(1i*phi))),2*pi);
 end
